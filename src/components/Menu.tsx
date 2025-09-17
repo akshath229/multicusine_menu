@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+
+
+import { useRef, useEffect } from "react";
+import { gsap } from "gsap";
+
+
 
 type Ingredient = { name: string; amount: string; calories: number };
 
@@ -22,6 +30,7 @@ function computeCalories(item: MenuItem) {
   return item.ingredients.reduce((s, ing) => s + (ing.calories || 0), 0);
 }
 
+
 function MenuItemCard({
   item,
   expanded,
@@ -31,10 +40,41 @@ function MenuItemCard({
   expanded: boolean;
   onToggle: (id: string) => void;
 }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const arrowRef = useRef<HTMLDivElement>(null);
   const totalCalories = computeCalories(item);
 
+  useEffect(() => {
+    if (contentRef.current) {
+      if (expanded) {
+        gsap.to(contentRef.current, {
+          height: "auto",
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.to(contentRef.current, {
+          height: 0,
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.inOut",
+        });
+      }
+    }
+
+    if (arrowRef.current) {
+      gsap.to(arrowRef.current, {
+        rotate: expanded ? 180 : 0,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    }
+  }, [expanded]);
+
   return (
-    <div className="w-full max-w-2xl border rounded-lg overflow-hidden">
+    <div className="w-full max-w-2xl border rounded-lg overflow-hidden shadow-sm">
+      {/* Header */}
       <button
         onClick={() => onToggle(item.id)}
         className="w-full flex items-center gap-4 p-4 bg-white dark:bg-black"
@@ -53,6 +93,7 @@ function MenuItemCard({
             No image
           </div>
         )}
+
         <div className="flex-1 text-left">
           <div className="flex items-baseline justify-between gap-4">
             <h3 className="text-lg font-semibold">{item.name}</h3>
@@ -62,46 +103,54 @@ function MenuItemCard({
             </div>
           </div>
           {item.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{item.description}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {item.description}
+            </p>
           )}
         </div>
-        <div className="text-sm text-gray-400">{expanded ? "▲" : "▼"}</div>
+
+        {/* Arrow */}
+        <div ref={arrowRef} className="text-gray-400">
+          ▼
+        </div>
       </button>
 
+      {/* Expandable Section */}
       <div
-        className={`px-4 pb-4 transition-[max-height] duration-200 ease-in-out bg-gray-50 dark:bg-gray-900 ${
-          expanded ? "max-h-[800px]" : "max-h-0"
-        } overflow-hidden`}
+        ref={contentRef}
+        className="px-4 pb-4 bg-gray-50 dark:bg-gray-900 overflow-hidden"
+        style={{ height: 0, opacity: 0 }}
       >
-        {expanded && (
-          <div className="pt-3">
-            <h4 className="font-medium mb-2">Ingredients</h4>
-            <div className="flex flex-col gap-2">
-              {item.ingredients && item.ingredients.length > 0 ? (
-                item.ingredients.map((ing, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between text-sm text-gray-700 dark:text-gray-300"
-                  >
-                    <div>{ing.name} · {ing.amount}</div>
-                    <div>{ing.calories} kcal</div>
+        <div className="pt-3">
+          <h4 className="font-medium mb-2">Ingredients</h4>
+          <div className="flex flex-col gap-2">
+            {item.ingredients?.length ? (
+              item.ingredients.map((ing, idx) => (
+                <div
+                  key={idx}
+                  className="flex justify-between text-sm text-gray-700 dark:text-gray-300"
+                >
+                  <div>
+                    {ing.name} · {ing.amount}
                   </div>
-                ))
-              ) : (
-                <div className="text-sm text-gray-500">No ingredient details</div>
-              )}
+                  <div>{ing.calories} kcal</div>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-gray-500">No ingredient details</div>
+            )}
 
-              <div className="border-t pt-2 mt-2 text-sm font-semibold flex justify-between">
-                <div>Total Calories</div>
-                <div>{totalCalories} kcal</div>
-              </div>
+            <div className="border-t pt-2 mt-2 text-sm font-semibold flex justify-between">
+              <div>Total Calories</div>
+              <div>{totalCalories} kcal</div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 }
+
 
 export default function Menu({ items }: { items: MenuItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
