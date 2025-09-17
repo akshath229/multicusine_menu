@@ -1,15 +1,8 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
-
-
-import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
-
-
 
 type Ingredient = { name: string; amount: string; calories: number };
 
@@ -21,7 +14,7 @@ type MenuItem = {
   category?: string;
   image?: string;
   ingredients?: Ingredient[];
-  calories?: number; // optional precomputed calories
+  calories?: number;
 };
 
 function computeCalories(item: MenuItem) {
@@ -29,7 +22,6 @@ function computeCalories(item: MenuItem) {
   if (!item.ingredients) return 0;
   return item.ingredients.reduce((s, ing) => s + (ing.calories || 0), 0);
 }
-
 
 function MenuItemCard({
   item,
@@ -42,6 +34,8 @@ function MenuItemCard({
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const ingredientsRef = useRef<HTMLDivElement[]>([]);
   const totalCalories = computeCalories(item);
 
   useEffect(() => {
@@ -53,12 +47,43 @@ function MenuItemCard({
           duration: 0.5,
           ease: "power2.out",
         });
+
+        gsap.fromTo(
+          ingredientsRef.current,
+          { opacity: 0, x: -15 },
+          {
+            opacity: 1,
+            x: 0,
+            stagger: 0.08,
+            delay: 0.15,
+            duration: 0.4,
+            ease: "power2.out",
+          }
+        );
+
+        gsap.fromTo(
+          cardRef.current,
+          { scale: 0.98, boxShadow: "0 0 0 rgba(0,0,0,0)" },
+          {
+            scale: 1,
+            boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+            duration: 0.4,
+            ease: "back.out(1.6)",
+          }
+        );
       } else {
         gsap.to(contentRef.current, {
           height: 0,
           opacity: 0,
           duration: 0.4,
           ease: "power2.inOut",
+        });
+
+        gsap.to(cardRef.current, {
+          scale: 1,
+          boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+          duration: 0.3,
+          ease: "power1.out",
         });
       }
     }
@@ -73,11 +98,14 @@ function MenuItemCard({
   }, [expanded]);
 
   return (
-    <div className="w-full max-w-2xl border rounded-lg overflow-hidden shadow-sm">
+    <div
+      ref={cardRef}
+      className="menu-card w-full max-w-2xl border rounded-lg overflow-hidden bg-white dark:bg-black shadow-sm transition-all"
+    >
       {/* Header */}
       <button
         onClick={() => onToggle(item.id)}
-        className="w-full flex items-center gap-4 p-4 bg-white dark:bg-black"
+        className="w-full flex items-center gap-4 p-4"
         aria-expanded={expanded}
       >
         {item.image ? (
@@ -115,7 +143,7 @@ function MenuItemCard({
         </div>
       </button>
 
-      {/* Expandable Section */}
+      {/* Expandable Content */}
       <div
         ref={contentRef}
         className="px-4 pb-4 bg-gray-50 dark:bg-gray-900 overflow-hidden"
@@ -128,7 +156,10 @@ function MenuItemCard({
               item.ingredients.map((ing, idx) => (
                 <div
                   key={idx}
-                  className="flex justify-between text-sm text-gray-700 dark:text-gray-300"
+                  ref={(el) => {
+                    if (el) ingredientsRef.current[idx] = el;
+                  }}
+                  className="flex justify-between text-sm text-gray-700 dark:text-gray-300 opacity-0"
                 >
                   <div>
                     {ing.name} · {ing.amount}
@@ -137,7 +168,9 @@ function MenuItemCard({
                 </div>
               ))
             ) : (
-              <div className="text-sm text-gray-500">No ingredient details</div>
+              <div className="text-sm text-gray-500">
+                No ingredient details
+              </div>
             )}
 
             <div className="border-t pt-2 mt-2 text-sm font-semibold flex justify-between">
@@ -151,10 +184,10 @@ function MenuItemCard({
   );
 }
 
-
 export default function Menu({ items }: { items: MenuItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -164,12 +197,31 @@ export default function Menu({ items }: { items: MenuItem[] }) {
 
   const filtered = useMemo(() => {
     if (selectedCategory === "All") return items;
-    return items.filter((it) => (it.category ?? "Uncategorized") === selectedCategory);
+    return items.filter(
+      (it) => (it.category ?? "Uncategorized") === selectedCategory
+    );
   }, [items, selectedCategory]);
 
   const toggleExpand = (id: string) => {
     setExpandedId((cur) => (cur === id ? null : id));
   };
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const cards = containerRef.current.querySelectorAll(".menu-card");
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: "power3.out",
+        }
+      );
+    }
+  }, [filtered]);
 
   return (
     <section className="w-full flex flex-col gap-6">
@@ -191,7 +243,8 @@ export default function Menu({ items }: { items: MenuItem[] }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      {/* Cards list with ref for stagger */}
+      <div ref={containerRef} className="flex flex-col gap-4">
         {filtered.map((it) => (
           <MenuItemCard
             key={it.id}
