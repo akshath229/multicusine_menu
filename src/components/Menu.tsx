@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
+import { TracingBeam } from "../components/tracingbeam"; // <-- import beam
 
 type Ingredient = { name: string; amount: string; calories: number };
 
@@ -54,7 +55,6 @@ function MenuItemCard({
           {
             opacity: 1,
             x: 0,
-            stagger: 0.08,
             delay: 0.15,
             duration: 0.4,
             ease: "power2.out",
@@ -216,7 +216,7 @@ export default function Menu({ items }: { items: MenuItem[] }) {
           opacity: 1,
           y: 0,
           duration: 0.6,
-          stagger: 0.15,
+          stagger: 0.0,
           ease: "power3.out",
         }
       );
@@ -243,17 +243,19 @@ export default function Menu({ items }: { items: MenuItem[] }) {
         </div>
       </div>
 
-      {/* Cards list with ref for stagger */}
-      <div ref={containerRef} className="flex flex-col gap-4">
-        {filtered.map((it) => (
-          <MenuItemCard
-            key={it.id}
-            item={it}
-            expanded={expandedId === it.id}
-            onToggle={toggleExpand}
-          />
-        ))}
-      </div>
+      {/* ✅ Wrap cards in TracingBeam */}
+      <TracingBeam className="px-4">
+        <div ref={containerRef} className="flex flex-col gap-4">
+          {filtered.map((it) => (
+            <MenuItemCard
+              key={it.id}
+              item={it}
+              expanded={expandedId === it.id}
+              onToggle={toggleExpand}
+            />
+          ))}
+        </div>
+      </TracingBeam>
     </section>
   );
 }

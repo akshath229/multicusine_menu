@@ -19,11 +19,30 @@ export const TracingBeam = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const [svgHeight, setSvgHeight] = useState(0);
 
-  useEffect(() => {
+useEffect(() => {
+  function updateHeight() {
     if (contentRef.current) {
       setSvgHeight(contentRef.current.offsetHeight);
     }
-  }, []);
+  }
+
+  updateHeight(); // run on mount
+
+  // run again on resize
+  window.addEventListener("resize", updateHeight);
+
+  // run again if children change size (expand/collapse)
+  const resizeObserver = new ResizeObserver(updateHeight);
+  if (contentRef.current) {
+    resizeObserver.observe(contentRef.current);
+  }
+
+  return () => {
+    window.removeEventListener("resize", updateHeight);
+    resizeObserver.disconnect();
+  };
+}, []);
+
 
   const y1 = useSpring(
     useTransform(scrollYProgress, [0, 0.8], [50, svgHeight]),
