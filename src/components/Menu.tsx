@@ -244,7 +244,6 @@ export default function Menu({ items }: { items: MenuItem[] }) {
       </div>
 
       {/* ✅ Wrap cards in TracingBeam */}
-      <TracingBeam className="px-4">
         <div ref={containerRef} className="flex flex-col gap-4">
           {filtered.map((it) => (
             <MenuItemCard
@@ -255,7 +254,6 @@ export default function Menu({ items }: { items: MenuItem[] }) {
             />
           ))}
         </div>
-      </TracingBeam>
     </section>
   );
 }
