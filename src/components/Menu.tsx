@@ -4,6 +4,7 @@ import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { TracingBeam } from "../components/tracingbeam"; // <-- import beam
+import SearchBar from "./SearchBar";
 
 type Ingredient = { name: string; amount: string; calories: number };
 
@@ -100,24 +101,26 @@ function MenuItemCard({
   return (
     <div
       ref={cardRef}
-      className="menu-card w-full max-w-2xl border rounded-lg overflow-hidden bg-white dark:bg-black shadow-sm transition-all"
+      className="menu-card w-full max-w-2xl border rounded-lg overflow-hidden bg-white shadow-sm transition-all"
     >
       {/* Header */}
       <button
         onClick={() => onToggle(item.id)}
-        className="w-full flex items-center gap-4 p-4"
+        className="w-full flex items-center gap-4 p-4 bg-white hover:bg-gray-50 transition-colors"
         aria-expanded={expanded}
       >
         {item.image ? (
-          <Image
-            src={item.image}
-            alt={item.name}
-            width={96}
-            height={64}
-            className="rounded-md object-cover"
-          />
+          <div className="relative -m-2">
+            <Image
+              src={item.image}
+              alt={item.name}
+              width={140}
+              height={100}
+              className="rounded-lg object-cover"
+            />
+          </div>
         ) : (
-          <div className="w-24 h-16 bg-gray-100 dark:bg-gray-800 rounded-md flex items-center justify-center text-sm text-gray-500">
+          <div className="w-24 h-16 bg-gray-100 rounded-md flex items-center justify-center text-sm text-gray-500">
             No image
           </div>
         )}
@@ -131,7 +134,7 @@ function MenuItemCard({
             </div>
           </div>
           {item.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               {item.description}
             </p>
           )}
@@ -146,7 +149,7 @@ function MenuItemCard({
       {/* Expandable Content */}
       <div
         ref={contentRef}
-        className="px-4 pb-4 bg-gray-50 dark:bg-gray-900 overflow-hidden"
+        className="px-4 pb-4 bg-white overflow-hidden"
         style={{ height: 0, opacity: 0 }}
       >
         <div className="pt-3">
@@ -159,7 +162,7 @@ function MenuItemCard({
                   ref={(el) => {
                     if (el) ingredientsRef.current[idx] = el;
                   }}
-                  className="flex justify-between text-sm text-gray-700 dark:text-gray-300 opacity-0"
+                  className="flex justify-between text-sm text-gray-700 opacity-0"
                 >
                   <div>
                     {ing.name} · {ing.amount}
@@ -187,7 +190,9 @@ function MenuItemCard({
 export default function Menu({ items }: { items: MenuItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -196,45 +201,171 @@ export default function Menu({ items }: { items: MenuItem[] }) {
   }, [items]);
 
   const filtered = useMemo(() => {
-    if (selectedCategory === "All") return items;
-    return items.filter(
-      (it) => (it.category ?? "Uncategorized") === selectedCategory
-    );
-  }, [items, selectedCategory]);
+    let filteredItems = items;
+    
+    // Filter by category
+    if (selectedCategory !== "All") {
+      filteredItems = filteredItems.filter(
+        (it) => (it.category ?? "Uncategorized") === selectedCategory
+      );
+    }
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filteredItems = filteredItems.filter((item) =>
+        item.name.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query) ||
+        item.ingredients?.some(ing => ing.name.toLowerCase().includes(query))
+      );
+    }
+    
+    return filteredItems;
+  }, [items, selectedCategory, searchQuery]);
 
   const toggleExpand = (id: string) => {
     setExpandedId((cur) => (cur === id ? null : id));
   };
 
+  const handleCategoryChange = (category: string) => {
+    // Enhanced button press animation
+    const buttonIndex = categories.indexOf(category);
+    const button = buttonRefs.current[buttonIndex];
+    
+    if (button) {
+      // Create a satisfying button press animation
+      gsap.timeline()
+        .to(button, {
+          scale: 0.9,
+          y: 2,
+          duration: 0.1,
+          ease: "power2.out"
+        })
+        .to(button, {
+          scale: 1.05,
+          y: -2,
+          duration: 0.15,
+          ease: "back.out(1.7)"
+        })
+        .to(button, {
+          scale: 1,
+          y: 0,
+          duration: 0.1,
+          ease: "power2.out"
+        });
+    }
+    
+    setSelectedCategory(category);
+  };
+
   useEffect(() => {
     if (containerRef.current) {
       const cards = containerRef.current.querySelectorAll(".menu-card");
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.0,
-          ease: "power3.out",
+      
+      // Animate out current cards with GSAP
+      gsap.to(cards, {
+        opacity: 0,
+        y: -30,
+        scale: 0.95,
+        duration: 0.4,
+        ease: "power2.inOut",
+        stagger: 0.05,
+        onComplete: () => {
+          // Animate in new cards with GSAP
+          gsap.fromTo(
+            cards,
+            { 
+              opacity: 0, 
+              y: 50, 
+              scale: 0.9
+            },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.8,
+              stagger: 0.15,
+              ease: "back.out(1.2)",
+            }
+          );
         }
-      );
+      });
     }
   }, [filtered]);
 
+  // Animate category buttons on mount
+  useEffect(() => {
+    if (buttonRefs.current.length > 0) {
+      gsap.fromTo(
+        buttonRefs.current,
+        { 
+          opacity: 0, 
+          y: -20, 
+          scale: 0.8 
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "back.out(1.2)"
+        }
+      );
+    }
+  }, []);
+
+  // Add hover animations to buttons
+  useEffect(() => {
+    buttonRefs.current.forEach((button, index) => {
+      if (button) {
+        const handleMouseEnter = () => {
+          gsap.to(button, {
+            scale: 1.05,
+            y: -2,
+            duration: 0.2,
+            ease: "power2.out"
+          });
+        };
+        
+        const handleMouseLeave = () => {
+          gsap.to(button, {
+            scale: 1,
+            y: 0,
+            duration: 0.2,
+            ease: "power2.out"
+          });
+        };
+
+        button.addEventListener('mouseenter', handleMouseEnter);
+        button.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+          button.removeEventListener('mouseenter', handleMouseEnter);
+          button.removeEventListener('mouseleave', handleMouseLeave);
+        };
+      }
+    });
+  }, [categories]);
+
   return (
     <section className="w-full flex flex-col gap-6">
+      {/* Search Bar */}
+      <SearchBar 
+        onSearch={setSearchQuery}
+      />
+      
       <div className="overflow-x-auto py-2">
         <div className="flex gap-3 px-1">
-          {categories.map((cat) => (
+          {categories.map((cat, index) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              ref={(el) => (buttonRefs.current[index] = el)}
+              onClick={() => handleCategoryChange(cat)}
               className={`whitespace-nowrap px-4 py-2 rounded-full border ${
                 selectedCategory === cat
-                  ? "bg-black text-white dark:bg-white dark:text-black"
-                  : "bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                  ? "bg-black text-white shadow-lg"
+                  : "bg-white text-gray-700 hover:shadow-md"
               }`}
             >
               {cat}
@@ -245,14 +376,25 @@ export default function Menu({ items }: { items: MenuItem[] }) {
 
       {/* ✅ Wrap cards in TracingBeam */}
         <div ref={containerRef} className="flex flex-col gap-4">
-          {filtered.map((it) => (
-            <MenuItemCard
-              key={it.id}
-              item={it}
-              expanded={expandedId === it.id}
-              onToggle={toggleExpand}
-            />
-          ))}
+          {filtered.length > 0 ? (
+            filtered.map((it) => (
+              <MenuItemCard
+                key={it.id}
+                item={it}
+                expanded={expandedId === it.id}
+                onToggle={toggleExpand}
+              />
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-gray-500 text-lg mb-2">
+                No items found
+              </div>
+              <div className="text-sm text-gray-400">
+                Try adjusting your search or category filter
+              </div>
+            </div>
+          )}
         </div>
     </section>
   );

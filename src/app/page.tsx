@@ -5,12 +5,26 @@ import Menu from "../components/Menu";
 
 const SAMPLE_MENU = [
   {
+    id: "6",
+    name: "Chai",
+    description: "Traditional Indian spiced tea with aromatic spices and milk",
+    price: "₹30",
+    category: "Beverages",
+    image: "/foodimages/chai.png",
+    ingredients: [
+      { name: "Tea Leaves", amount: "5g", calories: 10 },
+      { name: "Milk", amount: "100ml", calories: 65 },
+      { name: "Sugar", amount: "8g", calories: 32 },
+      { name: "Spices", amount: "3g", calories: 5 },
+    ],
+  },
+  {
     id: "1",
     name: "Plain Dosa",
     description: "Crispy South Indian dosa served with coconut chutney and sambar",
     price: "₹60",
     category: "Dosa",
-    image: "/dosa.svg",
+    image: "/foodimages/plaindosa.png",
     ingredients: [
       { name: "Rice Batter", amount: "120g", calories: 210 },
       { name: "Urad Dal Batter", amount: "40g", calories: 120 },
@@ -25,7 +39,7 @@ const SAMPLE_MENU = [
       "Crispy dosa stuffed with spiced potato masala, served with chutney & sambar",
     price: "₹90",
     category: "Dosa",
-    image: "/masala-dosa.svg",
+    image: "/foodimages/masaladosa.png",
     ingredients: [
       { name: "Rice Batter", amount: "120g", calories: 210 },
       { name: "Urad Dal Batter", amount: "40g", calories: 120 },
@@ -41,7 +55,7 @@ const SAMPLE_MENU = [
     description: "Dosa stuffed with spicy chicken masala filling",
     price: "₹140",
     category: "Dosa",
-    image: "/chicken-dosa.svg",
+    image: "/foodimages/chickendosa.png",
     ingredients: [
       { name: "Rice Batter", amount: "120g", calories: 210 },
       { name: "Urad Dal Batter", amount: "40g", calories: 120 },
@@ -57,7 +71,7 @@ const SAMPLE_MENU = [
     description: "Crispy dosa with Kerala-style beef masala filling",
     price: "₹160",
     category: "Dosa",
-    image: "/beef-dosa.svg",
+    image: "/foodimages/plaindosa.png",
     ingredients: [
       { name: "Rice Batter", amount: "120g", calories: 210 },
       { name: "Urad Dal Batter", amount: "40g", calories: 120 },
@@ -73,7 +87,7 @@ const SAMPLE_MENU = [
     description: "Crispy dosa layered with melted cheese",
     price: "₹110",
     category: "Dosa",
-    image: "/cheese-dosa.svg",
+    image: "/foodimages/plaindosa.png",
     ingredients: [
       { name: "Rice Batter", amount: "120g", calories: 210 },
       { name: "Urad Dal Batter", amount: "40g", calories: 120 },
@@ -81,57 +95,25 @@ const SAMPLE_MENU = [
       { name: "Oil", amount: "10ml", calories: 90 },
     ],
   },
-  {
-    id: "6",
-    name: "Filter Coffee",
-    description: "Traditional South Indian filter coffee with frothy milk",
-    price: "₹40",
-    category: "Beverages",
-    image: "/filter-coffee.svg",
-    ingredients: [
-      { name: "Coffee Powder", amount: "10g", calories: 20 },
-      { name: "Milk", amount: "120ml", calories: 80 },
-      { name: "Sugar", amount: "10g", calories: 40 },
-    ],
-  },
+
 ];
 
 export default function Home() {
-  const [dark, setDark] = useState(false);
-
   useEffect(() => {
-    if (dark) {
-      document.documentElement.classList.add("dark");
-      document.body.style.background = "#0f172a";
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.body.style.background = "#ffffff";
-    }
-  }, [dark]);
+    // Force light mode always
+    document.documentElement.classList.remove("dark");
+    document.body.style.background = "#ffffff";
+    localStorage.setItem('theme', 'light');
+  }, []);
 
   return (
-    <div className="font-sans min-h-screen flex flex-col items-center px-6 py-10 bg-white dark:bg-black transition-colors duration-300">
-      <header className="w-full max-w-4xl flex items-center justify-between mb-10">
+    <div className="container font-sans min-h-screen flex flex-col items-center px-6 py-10 transition-colors duration-300 relative">
+      <header className="w-full max-w-4xl flex items-center justify-center mb-10">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Multicuisine Menu</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-600 mt-1">
             Welcome — browse our restaurant menu below.
           </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <label className="text-sm">Dark mode</label>
-          <button
-            onClick={() => setDark((d) => !d)}
-            className="w-12 h-6 rounded-full bg-gray-200 dark:bg-gray-700 relative"
-            aria-pressed={dark}
-          >
-            <span
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${
-                dark ? "translate-x-6" : "translate-x-0"
-              }`}
-            />
-          </button>
         </div>
       </header>
 
@@ -139,7 +121,7 @@ export default function Home() {
         <Menu items={SAMPLE_MENU} />
       </main>
 
-      <footer className="mt-12 text-xs text-gray-500 dark:text-gray-400">
+      <footer className="mt-12 text-xs text-gray-500">
         © {new Date().getFullYear()} Multicuisine Restaurant. All rights reserved.
       </footer>
     </div>
