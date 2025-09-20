@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Lottie from "lottie-react";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import restaurantLoaderAnimation from "../../public/Restaurant website Pre loader.json";
 
 interface SearchBarProps {
@@ -10,11 +10,10 @@ interface SearchBarProps {
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const lottieRef = useRef<any>(null);
+  const lottieRef = useRef<LottieRefCurrentProps | null>(null);
 
   const foodPlaceholders = [
     "Want something spicy?",
@@ -47,17 +46,11 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   const handleFocus = () => {
-    setIsFocused(true);
-    if (lottieRef.current) {
-      lottieRef.current.play();
-    }
+    lottieRef.current?.play?.();
   };
 
   const handleBlur = () => {
-    setIsFocused(false);
-    if (lottieRef.current) {
-      lottieRef.current.stop();
-    }
+    lottieRef.current?.stop?.();
   };
 
   const handleClear = () => {
