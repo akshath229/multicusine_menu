@@ -360,7 +360,7 @@ export default function Menu({ items }: { items: MenuItem[] }) {
           {categories.map((cat, index) => (
             <button
               key={cat}
-              ref={(el) => (buttonRefs.current[index] = el)}
+              ref={(el) => { buttonRefs.current[index] = el; }}
               onClick={() => handleCategoryChange(cat)}
               className={`whitespace-nowrap px-4 py-2 rounded-full border ${
                 selectedCategory === cat
