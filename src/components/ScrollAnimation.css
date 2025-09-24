@@ -1,0 +1,31 @@
+.hero-background {
+  background: linear-gradient(
+      to bottom,
+      #F3E7D7 100px,
+      transparent 100px,
+      transparent calc(80vh - 40px),
+      #F3E7D7 calc(80vh - 40px)
+    ),
+    linear-gradient(
+      to right,
+      #F3E7D7 24px,
+      transparent 24px,
+      transparent calc(100% - 24px),
+      #F3E7D7 calc(100% - 24px)
+    );
+}
+
+.window-mask {
+  mask-image: linear-gradient(black, black), url("/window.svg");
+  mask-composite: exclude;
+  mask-repeat: no-repeat;
+  mask-size: auto, 300px auto;
+  mask-position: center center, center right 3rem;
+}
+
+@media (max-width: theme("screens.md")) {
+  .window-mask {
+    mask-size: auto, 150px auto;
+    mask-position: center center, center bottom 1.5rem;
+  }
+}

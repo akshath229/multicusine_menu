@@ -101,12 +101,16 @@ function MenuItemCard({
   return (
     <div
       ref={cardRef}
-      className="menu-card w-full max-w-2xl border rounded-lg overflow-hidden bg-white shadow-sm transition-all"
+      className="menu-card w-full max-w-2xl border rounded-lg overflow-hidden shadow-sm transition-all"
+      style={{ backgroundColor: '#F8F1E8' }}
     >
       {/* Header */}
       <button
         onClick={() => onToggle(item.id)}
-        className="w-full flex items-center gap-4 p-4 bg-white hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center gap-4 p-4 transition-colors"
+        style={{ backgroundColor: '#F8F1E8' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0E5D3'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F8F1E8'}
         aria-expanded={expanded}
       >
         {item.image ? (
@@ -127,7 +131,7 @@ function MenuItemCard({
 
         <div className="flex-1 text-left">
           <div className="flex items-baseline justify-between gap-4">
-            <h3 className="text-lg font-semibold">{item.name}</h3>
+            <h3 className="text-lg font-semibold" style={{ color: '#903E10' }}>{item.name}</h3>
             <div className="text-right">
               <div className="text-sm text-gray-500">{item.price}</div>
               <div className="text-xs text-gray-400">{totalCalories} kcal</div>
@@ -149,8 +153,8 @@ function MenuItemCard({
       {/* Expandable Content */}
       <div
         ref={contentRef}
-        className="px-4 pb-4 bg-white overflow-hidden"
-        style={{ height: 0, opacity: 0 }}
+        className="px-4 pb-4 overflow-hidden"
+        style={{ backgroundColor: '#F8F1E8', height: 0, opacity: 0 }}
       >
         <div className="pt-3">
           <h4 className="font-medium mb-2">Ingredients</h4>
@@ -349,7 +353,7 @@ export default function Menu({ items }: { items: MenuItem[] }) {
   }, [categories]);
 
   return (
-    <section className="w-full flex flex-col gap-6">
+    <section className="w-full flex flex-col gap-6" style={{ backgroundColor: '#F3E7D7' }}>
       {/* Search Bar */}
       <SearchBar 
         onSearch={setSearchQuery}
@@ -362,11 +366,16 @@ export default function Menu({ items }: { items: MenuItem[] }) {
               key={cat}
               ref={(el) => { buttonRefs.current[index] = el; }}
               onClick={() => handleCategoryChange(cat)}
-              className={`whitespace-nowrap px-4 py-2 rounded-full border ${
+              className={`whitespace-nowrap px-4 py-2 rounded-full border transition-all ${
                 selectedCategory === cat
-                  ? "bg-black text-white shadow-lg"
-                  : "bg-white text-gray-700 hover:shadow-md"
+                  ? "shadow-lg"
+                  : "hover:shadow-md"
               }`}
+              style={{
+                backgroundColor: selectedCategory === cat ? '#903E10' : '#F8F1E8',
+                color: selectedCategory === cat ? '#F8F1E8' : '#903E10',
+                borderColor: '#903E10'
+              }}
             >
               {cat}
             </button>
