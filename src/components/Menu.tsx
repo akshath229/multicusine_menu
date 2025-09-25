@@ -101,60 +101,62 @@ function MenuItemCard({
   return (
     <div
       ref={cardRef}
-      className="menu-card w-full max-w-2xl border rounded-lg overflow-hidden shadow-sm transition-all"
-      style={{ backgroundColor: '#F8F1E8' }}
+      className="menu-card relative w-full max-w-2xl border rounded-2xl overflow-hidden shadow-sm transition-all"
+      style={{ backgroundColor: '#FCF8EC', borderColor: '#EFE6D0' }}
     >
-      {/* Header */}
-      <button
+      {/* Card header (title + price badge) */}
+      <div
+        role="button"
         onClick={() => onToggle(item.id)}
-        className="w-full flex items-center gap-4 p-4 transition-colors"
-        style={{ backgroundColor: '#F8F1E8' }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0E5D3'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F8F1E8'}
         aria-expanded={expanded}
+        className="cursor-pointer select-none"
       >
-        {item.image ? (
-          <div className="relative -m-2">
-            <Image
-              src={item.image}
-              alt={item.name}
-              width={140}
-              height={100}
-              className="rounded-lg object-cover"
-            />
-          </div>
-        ) : (
-          <div className="w-24 h-16 bg-gray-100 rounded-md flex items-center justify-center text-sm text-gray-500">
-            No image
-          </div>
-        )}
-
-        <div className="flex-1 text-left">
-          <div className="flex items-baseline justify-between gap-4">
+        <div className="p-6 pt-6 pb-4">
+          <div className="flex items-center">
             <h3 className="text-lg font-semibold" style={{ color: '#903E10' }}>{item.name}</h3>
-            <div className="text-right">
-              <div className="text-sm text-gray-500">{item.price}</div>
-              <div className="text-xs text-gray-400">{totalCalories} kcal</div>
-            </div>
+            <div className="flex-1 h-px ml-4" style={{ backgroundColor: '#E7DFC9' }} />
           </div>
-          {item.description && (
-            <p className="text-sm text-gray-600 mt-1">
-              {item.description}
-            </p>
+        </div>
+
+        {/* Price badge */}
+        <div className="absolute top-4 right-4">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold shadow-md" style={{ backgroundColor: '#6B7A4A', color: '#FCF8EC' }}>
+            {item.price}
+          </div>
+        </div>
+
+        {/* Image (centered) */}
+        <div className="flex justify-center -mt-6 px-6">
+          {item.image ? (
+            <div className="relative">
+              <Image
+                src={item.image}
+                alt={item.name}
+                width={200}
+                height={140}
+                className="rounded-lg object-cover"
+              />
+            </div>
+          ) : (
+            <div className="w-36 h-24 bg-gray-100 rounded-md flex items-center justify-center text-sm text-gray-500">
+              No image
+            </div>
           )}
         </div>
 
-        {/* Arrow */}
-        <div ref={arrowRef} className="text-gray-400">
-          ▼
-        </div>
-      </button>
+        {/* Short description */}
+        {item.description && (
+          <div className="px-6 pt-4 pb-4 text-sm text-gray-600">
+            {item.description}
+          </div>
+        )}
+      </div>
 
       {/* Expandable Content */}
       <div
         ref={contentRef}
-        className="px-4 pb-4 overflow-hidden"
-        style={{ backgroundColor: '#F8F1E8', height: 0, opacity: 0 }}
+        className="px-6 pb-4 overflow-hidden"
+        style={{ backgroundColor: '#FCF8EC', height: 0, opacity: 0 }}
       >
         <div className="pt-3">
           <h4 className="font-medium mb-2">Ingredients</h4>
@@ -354,37 +356,39 @@ export default function Menu({ items }: { items: MenuItem[] }) {
 
   return (
     <section className="w-full flex flex-col gap-6" style={{ backgroundColor: '#F3E7D7' }}>
-      {/* Search Bar */}
-      <SearchBar 
-        onSearch={setSearchQuery}
-      />
-      
-      <div className="overflow-x-auto py-2">
-        <div className="flex gap-3 px-1">
-          {categories.map((cat, index) => (
-            <button
-              key={cat}
-              ref={(el) => { buttonRefs.current[index] = el; }}
-              onClick={() => handleCategoryChange(cat)}
-              className={`whitespace-nowrap px-4 py-2 rounded-full border transition-all ${
-                selectedCategory === cat
-                  ? "shadow-lg"
-                  : "hover:shadow-md"
-              }`}
-              style={{
-                backgroundColor: selectedCategory === cat ? '#903E10' : '#F8F1E8',
-                color: selectedCategory === cat ? '#F8F1E8' : '#903E10',
-                borderColor: '#903E10'
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </div>
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-4xl p-6 rounded-lg" style={{ backgroundColor: '#FAF4E2' }}>
+          {/* Search Bar */}
+          <SearchBar 
+            onSearch={setSearchQuery}
+          />
+          
+          <div className="overflow-x-auto py-2">
+            <div className="flex gap-3 px-1">
+              {categories.map((cat, index) => (
+                <button
+                  key={cat}
+                  ref={(el) => { buttonRefs.current[index] = el; }}
+                  onClick={() => handleCategoryChange(cat)}
+                  className={`whitespace-nowrap px-4 py-2 rounded-full border transition-all ${
+                    selectedCategory === cat
+                      ? "shadow-lg"
+                      : "hover:shadow-md"
+                  }`}
+                    style={{
+                    backgroundColor: selectedCategory === cat ? '#6B715C' : '#FAF4E2',
+                    color: selectedCategory === cat ? '#FAF4E2' : '#6B715C',
+                    borderColor: '#6B715C'
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* ✅ Wrap cards in TracingBeam */}
-        <div ref={containerRef} className="flex flex-col gap-4">
+          {/* ✅ Wrap cards in TracingBeam */}
+            <div ref={containerRef} className="flex flex-col gap-4">
           {filtered.length > 0 ? (
             filtered.map((it) => (
               <MenuItemCard
@@ -404,7 +408,9 @@ export default function Menu({ items }: { items: MenuItem[] }) {
               </div>
             </div>
           )}
+            </div>
         </div>
+      </div>
     </section>
   );
 }
