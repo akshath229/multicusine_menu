@@ -22,7 +22,7 @@
 }
 
 :root {
-  --background: #903E10;
+  --background: #FCF8EC;
   --foreground: #403E41;
   --primary: #903E10;
   --secondary: #F0E5D3;
@@ -40,7 +40,7 @@
 /* Force light mode - disable dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #F3E7D7;
+    --background: #FCF8EC;
     --foreground: #403E41;
     --primary: #903E10;
     --secondary: #F0E5D3;

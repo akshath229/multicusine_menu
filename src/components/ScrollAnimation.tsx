@@ -67,7 +67,7 @@ export default function ScrollAnimation({
           </div>
         </motion.div>
       </div>
-      <div className="mt-[-200vh] h-[200vh] overflow-clip pb-20" style={{ backgroundColor: '#F0E5D3' }}>
+  <div className="mt-[-200vh] h-[200vh] overflow-clip pb-20" style={{ backgroundColor: '#F0E5D3' }}>
         <motion.span
           style={{ x: imageXCalc }}
           className="sticky top-1/2 mx-auto block aspect-video w-[1600px]  max-w-[90%] rounded-[60px] bg-gray-300 shadow-2xl md:top-1/4"

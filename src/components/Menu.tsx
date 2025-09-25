@@ -113,7 +113,7 @@ function MenuItemCard({
       >
         <div className="p-6 pt-6 pb-4">
           <div className="flex items-center">
-            <h3 className="text-lg font-semibold" style={{ color: '#903E10' }}>{item.name}</h3>
+            <h3 className="text-lg font-semibold" style={{ color: '#6F6353' }}>{item.name}</h3>
             <div className="flex-1 h-px ml-4" style={{ backgroundColor: '#E7DFC9' }} />
           </div>
         </div>

@@ -103,12 +103,12 @@ export default function Home() {
   useEffect(() => {
     // Force light mode always
     document.documentElement.classList.remove("dark");
-    document.body.style.background = "#903E10";
+    document.body.style.background = "#FCF8EC";
     localStorage.setItem('theme', 'light');
   }, []);
 
   return (
-    <div className="font-sans min-h-screen transition-colors duration-300 relative" style={{ backgroundColor: '#903E10' }}>
+  <div className="font-sans min-h-screen transition-colors duration-300 relative" style={{ backgroundColor: '#FCF8EC' }}>
       {/* Scroll Animation Component */}
       <ScrollAnimation 
         title="Multicuisine Menu"
@@ -118,7 +118,7 @@ export default function Home() {
       />
       
       {/* Menu Section */}
-      <div className="container flex flex-col items-center px-6 py-10" style={{ backgroundColor: '#F3E7D7' }}>
+  <div className="container flex flex-col items-center px-6 py-10" style={{ backgroundColor: '#FCF8EC' }}>
         <header className="w-full max-w-4xl flex items-center justify-center mb-10">
           <div>
             <h1 className="text-6xl font-medium tracking-tight wonderbar-font" style={{ color: '#903E10' }}>Menu</h1>
