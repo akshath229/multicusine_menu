@@ -64,7 +64,8 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   return (
     <div className="relative w-full max-w-2xl mx-auto mb-8 px-4">
       <div className="relative">
-        <input
+        <div className="rounded-2xl p-[2px] bg-gradient-to-r from-[#6B715C] via-[#903E10] to-[#6B715C]">
+          <input
           ref={inputRef}
           type="text"
           value={searchQuery}
@@ -72,12 +73,13 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={foodPlaceholders[currentPlaceholder]}
-          className={`block w-full text-base h-[60px] px-6 pr-16 text-slate-900 bg-white rounded-2xl border-2 border-gray-200 appearance-none focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 hover:border-gray-300 peer invalid:border-red-500 invalid:focus:border-red-500 overflow-ellipsis overflow-hidden text-nowrap transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg placeholder:text-gray-400 ${
+          className={`block w-full text-base h-[60px] px-6 pr-16 text-slate-900 bg-white rounded-2xl appearance-none focus:outline-none focus:ring-4 focus:ring-[#6B715C]/20 peer invalid:border-red-500 invalid:focus:border-red-500 overflow-ellipsis overflow-hidden text-nowrap transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg placeholder:text-gray-400 ${
             isAnimating 
               ? 'placeholder:opacity-0 placeholder:translate-y-2' 
               : 'placeholder:opacity-100 placeholder:translate-y-0'
           }`}
         />
+        </div>
 
         {/* Lottie Animation Icon */}
         <div className="absolute top-3 right-3 w-10 h-10 flex items-center justify-center pointer-events-none">

@@ -357,7 +357,7 @@ export default function Menu({ items }: { items: MenuItem[] }) {
   return (
     <section className="w-full flex flex-col gap-6" style={{ backgroundColor: '#F3E7D7' }}>
       <div className="w-full flex justify-center">
-        <div className="w-full max-w-4xl p-6 rounded-lg" style={{ backgroundColor: '#FAF4E2' }}>
+  <div className="w-full max-w-4xl p-6 rounded-3xl overflow-hidden shadow-md" style={{ backgroundColor: '#FAF4E2' }}>
           {/* Search Bar */}
           <SearchBar 
             onSearch={setSearchQuery}
@@ -388,7 +388,7 @@ export default function Menu({ items }: { items: MenuItem[] }) {
           </div>
 
           {/* ✅ Wrap cards in TracingBeam */}
-            <div ref={containerRef} className="flex flex-col gap-4">
+            <div ref={containerRef} className="mt-6 flex flex-col gap-4">
           {filtered.length > 0 ? (
             filtered.map((it) => (
               <MenuItemCard
